@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quran Player By Imad</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+      integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w=="
+      crossorigin="anonymous"
+    />
+     <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./assets/css/main.css" />
+	
+	
+	
+  </head>
+  <body>
+    <div class="player">
+      <!-- Dashboard -->
+      <div class="dashboard">
+        <!-- Header -->
+        <header>
+		<style>
+
+     body{
+    }
+    ul li {
+        display: inline;
+    }
+
+  
+</style>
+</head>
+<body>
+			<nav class="container">
+  <ul class="menu">
+    <li><a href="#">تغيير القارئ</a>
+	<nav>
+      <ul class="sub-menu">
+        <li><a href="index.html">ياسر الدوسري</a></li>
+        <li><a href="shatri.html">أبو بكر الشاطري</a></li>
+        <li><a href="maher.html">ماهر المعيقلي</a></li>
+		<li><a href="afs.html">مشاري العفاسي</a></li>
+      </ul>
+	</nav>
+    </li>
+  </ul>
+</nav>
+          <h2>جاري التحميل</h2>
+        </header>
+
+        <!-- CD -->
+        <div class="cd">
+          <div class="cd-thumb" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg');"></div>
+        </div>
+
+        <!-- Control -->
+        <div class="control">
+          <div class="btn btn-repeat">
+            <i class="fas fa-redo"></i>
+          </div>
+          <div class="btn btn-prev">
+            <i class="fas fa-step-backward"></i>
+          </div>
+          <div class="btn btn-toggle-play">
+            <i class="fas fa-pause icon-pause"></i>
+            <i class="fas fa-play icon-play"></i>
+          </div>
+          <div class="btn btn-next">
+            <i class="fas fa-step-forward"></i>
+          </div>
+          <div class="btn btn-random">
+            <i class="fas fa-random"></i>
+          </div>
+        </div>
+
+        <input id="progress" class="progress" type="range" step="1" value="0" min="0" max="100" />
+
+        <audio id="audio" src=""></audio>
+      </div>
+
+      <!-- Playlist -->
+      <div class="playlist"></div>
+    </div>
+    <script>
+      /**
+       * 1. Render songs -> OK
+       * 2. Scroll top -> OK
+       * 3. Play / pause / seek(tua) // bug in seek
+       * 4. CD rotate -> OK
+       * 5. Next / prev -> OK
+       * 6. Random -> OK
+       * 7. Next / Repeat when ended -> OK
+       * 8. Active song -> OK
+       * 9. Scroll active song into-view -> bug when song go to index 0 1 2
+       * 10. Play song when click -. OK
+       * 11. Save to localStorage
+       */
+
+      const $ = document.querySelector.bind(document);
+      const $$ = document.querySelectorAll.bind(document);
+
+      const PLAYER_STORAGE_KEY = "VTC_PLAYER";
+
+      const player = $(".player");
+      const cd = $(".cd");
+
+      const heading = $("header h2");
+      const cdThumb = $(".cd-thumb");
+      const audio = $("#audio");
+      const playlist = $(".playlist");
+
+      const playBtn = $(".btn-toggle-play");
+      const progress = $("#progress");
+
+      const prevBtn = $(".btn-prev");
+      const nextBtn = $(".btn-next");
+
+      const randomBtn = $(".btn-random");
+      const repeatBtn = $(".btn-repeat");
+
+      const app = {
+        currentIndex: 0, //vị trí bài hát hiện tại từ 0 -> n-1
+        isPlaying: false,
+        isRandom: false,
+        isRepeat: false,
+        config: JSON.parse(localStorage.getItem(PLAYER_STORAGE_KEY)) || {},
+        songs: [
+		
+          {
+            name: "سورة الفاتحة",
+            singer: " ياسر الدوسري - حفص عن عاصم ",
+            path: "https://server11.mp3quran.net/yasser/001.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+		<a href="https://server11.mp3quran.net/yasser/001.mp3" download="تحميل">
+  <img src="https://server11.mp3quran.net/yasser/001.mp3" alt="تحميل">
+</a>
+
+          },
+		  
+          {
+            name: " سورة البقرة ",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/002.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: "سورة آل عمران",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/003.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: "سورة النساء",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/004.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: "سورة المائدة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/005.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: "سورة الأنعام",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/006.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: "سورة الأعراف",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/007.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: "سورة الأنفال",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/008.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: " سورة التوبة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/009.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+          {
+            name: "سورة يونس",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/010.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة هود",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/011.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة يوسف",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/012.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الرعد",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/013.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة إبراهيم",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/014.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الحجر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/015.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة النحل",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/016.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الإسراء",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/017.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الكهف",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/018.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة مريم",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/019.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة طه",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/020.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الأنبياء",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/021.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  {
+            name: "سورة الحج",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/022.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		 
+		  {
+            name: "سورة المؤمنون",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/023.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة النور",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/024.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الفرقان",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/025.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الشعراء",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/026.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة النمل",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/027.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة القصص",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/028.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة العنكبوت",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/029.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		
+		 {
+            name: "سورة الروم",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/030.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة لقمان",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/031.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة السجدة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/032.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الأحزاب",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/033.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة سبأ",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/034.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة فاطر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/035.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة يس",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/036.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الصافات",
+			singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/037.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة ص",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/038.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الزمر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/039.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة غافر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/040.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة فصلت",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/041.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الشورى",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/042.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الزخرف",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/043.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الدخان",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/044.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الجاثية",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/045.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الأحقاف",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/046.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة محمد",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/047.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الفتح",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/048.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الحجرات",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/049.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة ق",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/050.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الذاريات",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/051.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الطور",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/052.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة النجم",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/053.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة القمر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/054.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الرحمن",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/055.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الواقعة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/056.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الحديد",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/057.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة المجادلة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/058.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الحشر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/059.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الممتحنة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/060.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الصف",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/061.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الجمعة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/062.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة المنافقون",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/063.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة التغابن",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/064.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الطلاق",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/065.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة التحريم",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/066.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الملك",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/067.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة القلم",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/068.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الحاقة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/069.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة المعارج",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/070.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة نوح",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/071.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الجن",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/072.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة المزمل",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/073.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: " سورة المدثر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/074.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة القيامة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/075.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الإنسان",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/076.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة المرسلات",
+            singer: " ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/077.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة النبأ",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/078.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة النازعات",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/079.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة عبس",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/080.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة التكوير",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/081.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الانفطار",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/082.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة المطففين",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/083.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الانشقاق",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/084.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة البروج",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/085.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الطارق",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/086.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الأعلى",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/087.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الغاشية",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/088.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الفجر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/089.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة البلد",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/090.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الشمس",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/091.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الليل",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/092.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الضحى",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/093.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الشرح",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/094.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة التين",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/095.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة العلق",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/096.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة القدر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/097.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة البينة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/098.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الزلزلة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/099.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة العاديات",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/100.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة القارعة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/101.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة التكاثر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/102.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة العصر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/103.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الهمزة",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/104.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الفيل",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/105.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة قريش",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/106.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الماعون",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/107.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الكوثر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/108.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		  {
+            name: "سورة الكافرون",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/109.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة النصر",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/110.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة المسد",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/111.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الإخلاص",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/112.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الفلق",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/113.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		  
+		   {
+            name: "سورة الناس",
+            singer: "ياسر الدوسري - حفص عن عاصم",
+            path: "https://server11.mp3quran.net/yasser/114.mp3",
+            image: "https://upload.wikimedia.org/wikipedia/commons/6/64/%D9%85%D8%AE%D8%B7%D9%88%D8%B7%D8%A9_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D8%8C_%D8%A7%D9%84%D9%82%D8%B1%D8%A2%D9%86_%D8%A7%D9%84%D9%83%D8%B1%D9%8A%D9%85_%D9%85%D8%B2%D8%AE%D8%B1%D9%81%D8%A9.svg",
+          },
+		 
+		  
+		  
+        ],
+        setConfig: function (key, value) {
+          this.config[key] = value;
+          localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify(this.config));
+        },
+        render: function () {
+          const htmls = this.songs.map((song, index) => {
+            return `
+                                <div class="song ${
+                                  index === this.currentIndex ? "active" : ""
+                                }" data-index="${index}">
+                                    <div class="thumb" style="background-image: url('${
+                                      song.image
+                                    }');">
+                                    </div>
+                                    <div class="body">
+                                        <h3 class="title">${song.name}</h3>
+                                        <p class="author">${song.singer}</p>
+                                    </div>
+                                    <div class="option">
+                                        <i class="fas fa-ellipsis-h"></i>
+                                    </div>
+                                </div>
+                            `;
+          });
+          playlist.innerHTML = htmls.join("");
+        },
+        defineProperties: function () {
+          Object.defineProperty(this, "currentSong", {
+            get: function () {
+              return this.songs[this.currentIndex];
+            },
+          });
+        },
+        handleEvents: function () {
+          const cdWidth = cd.offsetWidth; //kich thuoc chieu ngang hien tai la 200px
+
+          // Xử lý cd quay và dừng
+          const cdThumbAnimate = cdThumb.animate(
+            [{ transform: "rotate(360deg)" }],
+            {
+              //option the hien quay ntn
+              duration: 10000, //10second
+              iterations: Infinity, //iterations la loop bao nhieu lan
+            }
+          );
+          cdThumbAnimate.pause(); // chua play thi chua quay
+
+          // Xử lý phóng to / thu nhỏ cd
+          document.onscroll = function () {
+            const scrollTop =
+              window.scrollY || document.documentElement.scrollTop;
+            const newCdWidth = cdWidth - scrollTop;
+
+            cd.style.width = newCdWidth > 0 ? newCdWidth + 'px' : 0//neu cd chua thu het
+            //cd.style.width = newCdWidth + "px";
+            cd.style.opacity = newCdWidth / cdWidth;//opacity tu 0 -> 1 thi lay kich thuoc moi chia cho kich thuoc cu thi ra ti le
+          };
+          // Xử lý khi click play
+          playBtn.onclick = function () {
+            //ở đây chỉ play hoặc pause còn xử lý trạng thái ở dưới
+            if (app.isPlaying) {
+              audio.pause();
+            } else {
+              audio.play();
+            }
+          };
+
+          // Khi song được play
+          audio.onplay = function () {
+            app.isPlaying = true;
+            player.classList.add("playing");
+            cdThumbAnimate.play();
+          };
+
+          //Khi song bị pause
+          audio.onpause = function () {
+            app.isPlaying = false;
+            player.classList.remove("playing");
+            cdThumbAnimate.pause();
+          };
+
+          // Khi tiến độ bài hát thay đổi
+          audio.ontimeupdate = function () {
+            if (audio.duration) {
+              const progressPercent = Math.floor(
+                (audio.currentTime / audio.duration) * 100
+              );
+              progress.value = progressPercent;
+            }
+          };
+
+          // Xử lý khi tua song
+          progress.onchange = function (e) {
+            const seekTime = (audio.duration / 100) * e.target.value;
+            audio.currentTime = seekTime;
+          };
+
+          // Khi next song
+          nextBtn.onclick = function () {
+            if (app.isRandom) {
+              app.playRandomSong(); //khi thực hiện random ở trên xong thì gọi lại hàm này
+            } else {
+              app.nextSong();
+            }
+            audio.play();
+            app.render(); //khi sang bai nao thi active bai do
+            app.scrollToActiveSong();
+          };
+
+          // Khi previous song
+          prevBtn.onclick = function () {
+            if (app.isRandom) {
+              app.playRandomSong(); //khi thực hiện random ở trên xong thì gọi lại hàm này
+            } else {
+              app.prevSong();
+            }
+            audio.play();
+            app.render(); //khi sang bai nao thi active bai do
+          };
+
+          // Xử lý bật / tắt random song
+          randomBtn.onclick = function () {
+            app.isRandom = !app.isRandom;
+            app.setConfig("isRandom", app.isRandom);
+            randomBtn.classList.toggle("active", app.isRandom); // khi click thìhì icon sẽ đỏ lên
+            //đối số t2 của toggle là boolean nên nếu là true là add class ở đối số t1 vào và ngược lại
+          };
+
+          //Xử lý lặp lại 1 song
+          repeatBtn.onclick = function () {
+            app.isRepeat = !app.isRepeat; //đối nhau
+            app.setConfig("isRepeat", app.isRepeat);
+            repeatBtn.classList.toggle("active", app.isRepeat);
+          };
+
+          // Xử lý next song khi audio ended
+          audio.onended = function () {
+            if (app.isRepeat) {
+              audio.play();
+            } else {
+              nextBtn.click();
+            }
+          };
+
+          // Lắng nghe sự kiện click vào playlist
+          playlist.onclick = function (e) {
+            // e là event ta nhận được sau khi nhấn chuột xuống
+            //console.log(e.target)// target chính là mục tiêu nó sẽ trả về chính cái bạn target vào
+            const songNode = e.target.closest(".song:not(.active)");
+            if (songNode || e.target.closest(".option")) {
+              //closest sẽ trả 1 là chính nó 2 là thẻ cha của nó
+              // not active là css selector (bài nào đang play thì ko cần active nữa)
+              if (songNode) {
+                app.currentIndex = Number(songNode.dataset.index);
+                app.loadCurrentSong();
+                app.render();
+                audio.play();
+              }
+
+              // Xử lý khi click vào option ...
+            }
+          };
+        },
+
+        scrollToActiveSong: function () {
+          setTimeout(() => {
+            $(".song.active").scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+            });
+          }, 500);
+        },
+
+        // getCurrentSong: function() {
+        //     return this.songs[this.song];
+        // },
+
+        // hàm này dùng để lấy ra dữ liệu bài hát
+        loadCurrentSong: function () {
+          heading.textContent = this.currentSong.name;
+          cdThumb.style.backgroundImage = `url('${this.currentSong.image}')`;
+          audio.src = this.currentSong.path;
+        },
+
+        loadConfig: function () {
+          this.isRandom = this.config.isRandom;
+          this.isRepeat = this.config.isRepeat;
+        },
+
+        nextSong: function () {
+          this.currentIndex++;
+          if (this.currentIndex >= this.songs.length) {
+            this.currentIndex = 0;
+          }
+          this.loadCurrentSong(); //next la se tai thong tin moi
+        },
+
+        prevSong: function () {
+          this.currentIndex--;
+          if (this.currentIndex < 0) {
+            this.currentIndex = this.songs.length - 1;
+          }
+          this.loadCurrentSong(); //next la se tai thong tin moi
+        },
+
+        playRandomSong: function () {
+          // random thì phải trừ bài hiện tại
+          let newIndex;
+          do {
+            newIndex = Math.floor(Math.random() * this.songs.length);
+          } while (newIndex === this.currentIndex); // index mới khác index hiện tại khi click next ỏ prev
+          // trong while sẽ là điều kiện sai // nếu vẫn bằng cái cũ thì quay lại lặp
+
+          this.currentIndex = newIndex; //sau khi qua do while thì set lại bài hát mới
+          this.loadCurrentSong();
+        },
+        start: function () {
+          // Gán cấu hình từ config vào ứng dụng
+          this.loadConfig();
+
+          // Định nghĩa thuộc tính cho Object
+          this.defineProperties();
+
+          // Lắng nghe / Xử lý các sự kiện (DOM events)
+          this.handleEvents();
+
+          // Tải thông tin bài hát đầu tiên vào UI khi chạy ứng dụng
+          this.loadCurrentSong();
+
+          // Render playlist
+          this.render();
+
+          // hiển thị trạng thái ban đầu của btn repeat
+          randomBtn.classList.toggle("active", this.isRandom);
+          repeatBtn.classList.toggle("active", this.isRepeat);
+        },
+      };
+      app.start();
+    </script>
+  </body>
+</html>
